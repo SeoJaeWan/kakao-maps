@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import Tesseract from 'tesseract.js'
+import { createWorker, PSM, type LoggerMessage } from 'tesseract.js'
 import { extractAddresses } from '../lib/addrRegex'
 
 export const useOcr = () => {
@@ -9,15 +9,29 @@ export const useOcr = () => {
   const runOcr = async (file: File) => {
     setLoading(true)
     setProgress(0)
-    const { data } = await Tesseract.recognize(file, 'kor', {
-      logger: (m) => {
+
+    const worker = await createWorker('kor', undefined, {
+      logger: (m: LoggerMessage) => {
         if (m.status === 'recognizing text') {
           setProgress(m.progress)
         }
       },
     })
+
+    await worker.setParameters({
+      tessedit_pageseg_mode: PSM.SPARSE_TEXT,
+      tessedit_char_whitelist: '가-힣0-9-',
+    })
+
+    const { data } = await worker.recognize(file)
+    await worker.terminate()
+
     setLoading(false)
-    return extractAddresses(data.text)
+
+    const text = data.text.replace(/\s+/g, ' ')
+    console.log(text)
+
+    return extractAddresses(text)
   }
 
   return { runOcr, progress, loading }
