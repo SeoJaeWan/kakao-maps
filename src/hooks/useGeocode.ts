@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useRef } from 'react'
-import { loadKakaoSdk } from '../lib/kakaoLoader'
+import { useKakaoLoader } from 'react-kakao-maps-sdk'
 
 export const useGeocode = () => {
   const geocoderRef = useRef<any>(null)
 
+  useKakaoLoader({ appkey: import.meta.env.VITE_KAKAO_APP_KEY, libraries: ['services'] })
+
   const geocode = async (address: string) => {
-    const kakao = await loadKakaoSdk()
+    const kakao = window.kakao
     if (!geocoderRef.current) {
       geocoderRef.current = new kakao.maps.services.Geocoder()
     }
