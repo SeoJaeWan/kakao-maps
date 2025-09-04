@@ -8,7 +8,7 @@ export const useGeocode = () => {
   useKakaoLoader({ appkey: import.meta.env.VITE_KAKAO_APP_KEY, libraries: ['services'] })
 
   const geocode = async (address: string) => {
-    const kakao = window.kakao
+    const kakao = window.kakao as any
     if (!geocoderRef.current) {
       geocoderRef.current = new kakao.maps.services.Geocoder()
     }

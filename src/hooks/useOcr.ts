@@ -28,7 +28,8 @@ export const useOcr = () => {
 
     setLoading(false)
 
-    const text = data.text.replace(/\s+/g, ' ')
+    console.log(data.text)
+    const text = data.text.replace(/\s+/g, ' ').trim()
     console.log(text)
 
     return extractAddresses(text)
